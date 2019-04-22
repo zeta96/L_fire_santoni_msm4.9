@@ -814,30 +814,35 @@ static void msm8952_ext_hs_delay_enable(struct work_struct *work)
 	pr_err("%s:  [zjm]  headset 111PAs.\n", __func__);
 }
 
-static void msm8952_ext_spk_control(u32 enable)
+static void AW_Audio_Ctl(bool enable)
 {
-#ifndef CONFIG_SND_SOC_AW87319
+#ifdef CONFIG_SND_SOC_AW87319
+	if (enable)
+		AW87319_Audio_Speaker();
+	else
+		AW87319_Audio_OFF();
+#else
 	int i = 0;
-#endif
-
 	if (enable) {
 		/* Open external audio PA device */
-#ifdef CONFIG_SND_SOC_AW87319
-		AW87319_Audio_Speaker();
-#else
 		for (i = 0; i < AW8738_MODE; i++) {
 			gpio_direction_output(spk_pa_gpio, false);
 			gpio_direction_output(spk_pa_gpio, true);
 		}
 		usleep_range(EXT_CLASS_D_EN_DELAY,
-		EXT_CLASS_D_EN_DELAY + EXT_CLASS_D_DELAY_DELTA);
-#endif
+				EXT_CLASS_D_EN_DELAY + EXT_CLASS_D_DELAY_DELTA);
 	} else {
 		gpio_direction_output(spk_pa_gpio, false);
 		/* time takes disable the external power amplifier */
 		usleep_range(EXT_CLASS_D_DIS_DELAY,
-		EXT_CLASS_D_DIS_DELAY + EXT_CLASS_D_DELAY_DELTA);
+				EXT_CLASS_D_DIS_DELAY + EXT_CLASS_D_DELAY_DELTA);
 	}
+#endif
+}
+
+static void msm8952_ext_spk_control(u32 enable)
+{
+	AW_Audio_Ctl(enable);
 
 	pr_err("%s: %s [hjf]  external speaker 222PAs.\n", __func__,
 		enable ? "Enable" : "Disable");
@@ -845,45 +850,19 @@ static void msm8952_ext_spk_control(u32 enable)
 
 static void msm8952_ext_spk__delayed_enable(struct work_struct *work)
 {
-#ifdef CONFIG_SND_SOC_AW87319
-	/* Open external audio PA device */
-	AW87319_Audio_Speaker();
-#else
-	int i = 0;
-
-	/* Open external audio PA device */
-	for (i = 0; i < AW8738_MODE; i++) {
-		gpio_direction_output(spk_pa_gpio, false);
-		gpio_direction_output(spk_pa_gpio, true);
-	}
-	usleep_range(EXT_CLASS_D_EN_DELAY,
-	EXT_CLASS_D_EN_DELAY + EXT_CLASS_D_DELAY_DELTA);
-#endif
+	AW_Audio_Ctl(true);
 
 	pr_err("%s:  [hjf]  external speaker enable.\n", __func__);
 }
 
 static void msm8x16_ext_spk_delayed_dualmode(struct work_struct *work)
 {
-#ifndef CONFIG_SND_SOC_AW87319
-	int i = 0;
-#endif
-
 	/* Open the headset device */
 	gpio_direction_output(headset_gpio, true);
 	usleep_range(EXT_CLASS_D_EN_DELAY,
 		EXT_CLASS_D_EN_DELAY + EXT_CLASS_D_DELAY_DELTA);
 
-#ifdef CONFIG_SND_SOC_AW87319
-	AW87319_Audio_Speaker();
-#else
-	for (i = 0; i < AW8738_MODE; i++) {
-		gpio_direction_output(spk_pa_gpio, false);
-		gpio_direction_output(spk_pa_gpio, true);
-	}
-	usleep_range(EXT_CLASS_D_EN_DELAY,
-		EXT_CLASS_D_EN_DELAY + EXT_CLASS_D_DELAY_DELTA);
-#endif
+	AW_Audio_Ctl(true);
 
 	pr_debug("%s: Enable external speaker PAs dualmode.\n", __func__);
 }
