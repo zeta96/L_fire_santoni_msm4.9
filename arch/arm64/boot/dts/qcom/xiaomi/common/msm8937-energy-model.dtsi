@@ -15,19 +15,19 @@
 };
 
 &CPU4 {
-		efficiency = <1019>;
+		efficiency = <932>;
 };
 
 &CPU5 {
-		efficiency = <1019>;
+		efficiency = <932>;
 };
 
 &CPU6 {
-		efficiency = <1019>;
+		efficiency = <932>;
 };
 
 &CPU7 {
-		efficiency = <1019>;
+		efficiency = <932>;
 };
 
 &energy_costs {
