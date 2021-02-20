@@ -3423,7 +3423,7 @@ static void walt_init_once(void)
 		scale_demand(sched_init_task_load_windows);
 }
 
-void walt_sched_init(struct rq *rq)
+void walt_sched_init_rq(struct rq *rq)
 {
 	int j;
 
