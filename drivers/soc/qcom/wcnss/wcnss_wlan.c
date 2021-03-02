@@ -458,10 +458,7 @@ static void *wcnss_ipc_log;
 #endif
 
 #define IPC_NUM_LOG_PAGES	12
-#define wcnss_ipc_log_string(_x...) do {		\
-	if (wcnss_ipc_log)				\
-		ipc_log_string(wcnss_ipc_log, _x);	\
-	} while (0)
+#define wcnss_ipc_log_string(_x...) ((void)0)
 
 void wcnss_log(enum wcnss_log_type type, const char *_fmt, ...)
 {
